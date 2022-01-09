@@ -78,13 +78,17 @@ base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/'
 img_url = base_url + curr_day.strftime('monitor/output/%Y/smtot_r_%Y%m%d.png')
 data_map = dl.ImageOverlay(id='data-img', url=img_url, bounds=cnrfc_domain, opacity=0.6)
 
+# color bar
+data_cbar = html.A(html.Img(src='https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/output/smtot_r_cbar.png', title='Color Bar', id='data-cbar-img'), id='data-cbar')
+
+
 ## all layers
 locator = dl.LocateControl(options={'locateOptions': {'enableHighAccuracy': True}})
 map_cnrfc = dl.Map([dl.TileLayer(), locator,
-                    dl.LayersControl([dl.Overlay(data_map,        id='data-map',        name='Data',        checked=True),
-                                      dl.Overlay(cnrfc_boundary,  id='cnrfc-boundary',  name='CNRFC',       checked=True),
-                                      dl.Overlay(fcst_watersheds, id='fcst-watersheds', name='Watersheds',  checked=True),
-                                      dl.Overlay(fcst_points,     id='fcst-points',     name='Fcst Points', checked=True)])],
+                    dl.LayersControl([dl.Overlay([data_map, data_cbar], id='data-map',        name='Data',        checked=True),
+                                      dl.Overlay(cnrfc_boundary,        id='cnrfc-boundary',  name='CNRFC',       checked=True),
+                                      dl.Overlay(fcst_watersheds,       id='fcst-watersheds', name='Watersheds',  checked=True),
+                                      dl.Overlay(fcst_points,           id='fcst-points',     name='Fcst Points', checked=True)])],
                    center=[38, -119], zoom=6,
                    style={'width': '100%', 'height': '100%', 'min-height': '800px', 'min-width': '800px', 'margin': '0px', 'display': 'block'})
 
@@ -180,6 +184,25 @@ app.clientside_callback(
     Output('data-img', 'url'),
     Input('datepicker', 'date'),
     Input(component_id='dropdown-data', component_property='value')
+)
+
+# callback to update url of color bar
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='update_cbar'
+    ),
+    Output('data-cbar-img', 'src'),
+    Input(component_id='dropdown-data', component_property='value')
+)
+
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='update_cbar_visibility'
+    ),
+    Output('data-cbar', 'href'),
+    Input(component_id='data-map', component_property='checked')
 )
 
 

@@ -36,10 +36,26 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             return new_url;
         },
         
-        // update datepicker and slider on button clicks
-        update_date: function(dfwd_t, dbwd_t, mfwd_t, mbwd_t, d_old, d_old2, d_min, d_max) {
+        // update overlay color bar
+        update_cbar: function(var_value) {
+            var base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/output/';
+            var var_names = ['smtot_r', 'swe_r'];
+            var new_url = base_url + var_names[var_value] + '_cbar.png';
+            return new_url;
+        },
         
-            var date_old = new Date(d_old2);
+        update_cbar_visibility: function(checked) {
+            //if (checked>0)
+                document.getElementById("data-cbar").style.visibility = "hidden";
+            //else
+                document.getElementById("data-cbar").style.display = "block";
+            //return checked.toString();
+        },
+
+        // update datepicker and slider on button clicks
+        update_date: function(dfwd_t, dbwd_t, mfwd_t, mbwd_t, d_slide, d_old, d_min, d_max) {
+        
+            var date_old = new Date(d_old);
             
             var date_min =new Date(d_min);
             var date_max =new Date(d_max);
