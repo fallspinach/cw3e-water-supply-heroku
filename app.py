@@ -38,7 +38,7 @@ point_to_layer = assign('''function(feature, latlng, context){
     return L.circleMarker(latlng, circleOptions);  // sender a simple circle marker.
 }''')
 
-fcst_points = dl.GeoJSON(url='assets/fnf_points_proj.pbf', format='geobuf', id='points',
+fcst_points = dl.GeoJSON(url='assets/fnf_points_proj_tooltip.pbf', format='geobuf', id='points',
                          options=dict(pointToLayer=point_to_layer), cluster=True, superClusterOptions=dict(radius=5),
                          hoverStyle=arrow_function(dict(weight=5, color='red', fillColor='red', dashArray='')),
                          hideout=dict(circleOptions=dict(fillOpacity=1, color='red', weight=2, radius=5), colorscale=['cyan'], colorProp='POINT_Y', min=0, max=100))
@@ -58,7 +58,7 @@ style_handle = assign('''function(feature, context){
     return style;
 }''')
 
-fcst_watersheds = dl.GeoJSON(url='assets/fnf_watershed_proj.pbf', format='geobuf', id='watershed',
+fcst_watersheds = dl.GeoJSON(url='assets/fnf_watershed_proj_tooltip.pbf', format='geobuf', id='watershed',
                              options=dict(style=style_handle),
                              hoverStyle=arrow_function(dict(weight=4, color='brown', dashArray='', fillOpacity=0)),
                              hideout=dict(colorscale=['darkblue'], classes=[0], style=watershed_style, colorProp='Area_SqMi'))
@@ -200,7 +200,6 @@ app.clientside_callback(
     Input('datepicker', 'min_date_allowed'),
     Input('datepicker', 'max_date_allowed')
 )
-
 
 
 if __name__ == '__main__':
