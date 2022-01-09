@@ -11,9 +11,9 @@ from dash_extensions.javascript import Namespace, arrow_function, assign
 from datetime import date, datetime, timedelta
 
 # temporary set up
-curr_day   = datetime(2021, 12, 15)
-data_start = datetime(1979, 1, 2)
-data_end   = datetime(2022, 1, 5)
+curr_day   = datetime(2022, 1, 6)
+data_start = datetime(2021, 6, 1)
+data_end   = datetime(2022, 1, 6)
 
 
 ## data variable selection dropdown
