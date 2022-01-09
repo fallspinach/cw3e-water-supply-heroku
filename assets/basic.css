@@ -1,0 +1,183 @@
+
+#bottom-controls {
+    position:       relative;
+    padding:        0px;
+    bottom:         45px;
+    margin-left:    auto;
+    margin-right:   auto;
+    z-index:        1000;
+    width:          1200px;
+}
+
+#layer-var-select-container {
+    position:       absolute;
+    top:            400px;
+    left:           20px;
+    width:          160px;
+    height:         65px;
+    z-index:        1100;
+    display:        inline-block;
+    vertical-align: bottom;
+}
+
+#layer-toggle-forcing {
+    margin-top:     5px;
+    background:     white;
+    opacity:        0.7;
+    padding:        3px;
+}
+
+#layer-toggle-gauges {
+    margin-top:     5px;
+    background:     white;
+    opacity:        0.7;
+    padding:        3px;
+}
+
+#datepicker-container {
+    margin-left:    0px;
+    width:          130px;
+    height:         30px;
+    padding:        0px;
+    display:        inline-block;
+    vertical-align: bottom;
+}
+
+#slider-day-container {
+    margin-left:    5px;
+    width:          550px;
+    background:     white;
+    opacity:        0.7;
+    padding:        0px;
+    display:        inline-block;
+    vertical-align: bottom;
+}
+
+#button-backward-day {
+    margin-left:    5px;
+    width:          30px;
+    height:         30px;
+    padding:        1px;
+    display:        inline-block;
+    vertical-align: bottom;
+    opacity:        0.8;
+    font-weight:    bold;
+}
+
+#button-backward-month {
+    margin-left:    10px;
+    width:          40px;
+    height:         30px;
+    padding:        1px;
+    display:        inline-block;
+    vertical-align: bottom;
+    opacity:        0.8;
+    font-weight:    bold;
+}
+
+#button-forward-day {
+    margin-left:    5px;
+    width:          30px;
+    height:         30px;
+    padding:        1px;
+    display:        inline-block;
+    vertical-align: bottom;
+    opacity:        0.8;
+    font-weight:    bold;
+}
+
+#button-forward-month {
+    margin-left:    5px;
+    width:          40px;
+    height:         30px;
+    padding:        1px;
+    display:        inline-block;
+    vertical-align: bottom;
+    opacity:        0.8;
+    font-weight:    bold;
+}
+
+#title-var {
+    margin-left:    0px;
+    width:          160px;
+    padding:        0px;
+    display:        inline-block;
+    vertical-align: bottom;
+    text-align:     right;
+    font-weight:    bold;
+}
+
+#title-date {
+    margin-left:    5px;
+    width:          100px;
+    padding:        0px;
+    display:        inline-block;
+    vertical-align: bottom;
+}
+
+#title-zone {
+    margin-left:    5px;
+    height:         25px;
+    background:     white;
+    opacity:        0.7;
+    padding:        0px;
+    display:        inline-block;
+    vertical-align: bottom;
+}
+
+
+.DateInput, .DateInput_1, .DateInput_input, .DateInput_input_1, .SingleDatePickerInput {
+    font-size: inherit;
+    height:    30px;
+    border:    0px;
+}
+
+.dash-dropdown, .Select-control, .Select-value, .Select-input, .Select-arrow-zone {
+    height:    30px;
+    border:    0px;
+}
+
+#popup-window {
+    position:       absolute;
+    border:         1px solid gray;
+    padding:        5px;
+    top   :         20px;
+    margin-left:    170px;
+    margin-right:   auto;
+    z-index:        1500;
+    width:          78%;
+    min-width:      800px;
+    height:         50%;
+    min-height:     430px;
+    background:     white;
+    opacity:        0.9;
+    display:        none;
+}
+
+#button-popup-close {
+     position:      relative;
+     top:           -18px;
+     left:          97%;
+     width:         30px;
+     height:        20px;
+     opacity:       0.8;
+}
+
+#title-popup {
+     position:      relative;
+     margin-left:   auto;
+     margin-right:  auto;
+     color:         blue;
+     width:         750px;
+     height:        20px;
+}
+
+
+#logo-cw3e {
+    position:       absolute;
+    top:            10px;
+    right:          120px;
+    z-index:        1100;
+}
+
+
