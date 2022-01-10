@@ -8,6 +8,8 @@ import dash_leaflet as dl
 import dash_leaflet.express as dlx
 from dash_extensions.javascript import Namespace, arrow_function, assign
 
+import plotly.express as px
+import plotly.graph_objs as go
 from datetime import date, datetime, timedelta
 
 # temporary set up
@@ -139,13 +141,37 @@ title_zone = html.Div([title_var, title_date], id='title-zone')
 bottom_controls = html.Div([datepicker, button_backward_month, button_backward_day, slider_day, button_forward_day, button_forward_month, title_zone],
                            id='bottom-controls')
 
+## build time series figures
+
+# flow data figure
+def draw_flows(staid):
+    if staid!=None:
+        fig_flows = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Time', 'y': 'Flow (kaf/mon)'})
+    else:
+        fig_flows = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (kaf/mon)'})
+    return fig_flows
+    
+# ancillary data figure
+def draw_ancil(staid):
+    if staid!=None:
+        fig_ancil = px.line(x=[2018, 2023], y=[50, 50], labels={'x': 'Time', 'y': 'Percentile'})
+    else:
+        fig_ancil = px.line(x=[2018, 2023], y=[50, 50], labels={'x': 'Data not available.', 'y': 'Percentile'})
+    return fig_ancil
+
+fig_flows = draw_flows('FTO')
+fig_ancil = draw_ancil('FTO')
+
 ## pop-up window
+
+graph_flows = dcc.Graph(id='graph-flows', figure=fig_flows, style={'height': '400px'})
+graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '400px'})
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
-tab_flows = dcc.Tab(label='Stremflow',      value='flows', children=[dcc.Loading(id='loading-hist-series', children=[])], style=tab_style, selected_style=tab_style)
-tab_ancil = dcc.Tab(label='Ancillary Data', value='ancil', children=[dcc.Loading(id='loading-mofo-series', children=[])], style=tab_style, selected_style=tab_style)
-tab_table = dcc.Tab(label='Table',          value='table', children=[dcc.Loading(id='loading-long-series', children=[])], style=tab_style, selected_style=tab_style)
+tab_flows = dcc.Tab(label='Stremflow',      value='flows', children=[dcc.Loading(id='loading-flows', children=graph_flows)], style=tab_style, selected_style=tab_style)
+tab_ancil = dcc.Tab(label='Ancillary Data', value='ancil', children=[dcc.Loading(id='loading-ancil', children=graph_ancil)], style=tab_style, selected_style=tab_style)
+tab_table = dcc.Tab(label='Table',          value='table', children=[dcc.Loading(id='loading-table', children=[])],        style=tab_style, selected_style=tab_style)
 
 button_popup_close = html.Button(' X ', id='button-popup-close')
 title_popup = html.Div('B-120 Forecast Point', id='title-popup')
