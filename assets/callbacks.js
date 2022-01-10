@@ -45,11 +45,10 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         },
         
         update_cbar_visibility: function(checked) {
-            //if (checked>0)
-                document.getElementById("data-cbar").style.visibility = "hidden";
-            //else
-                document.getElementById("data-cbar").style.display = "block";
-            //return checked.toString();
+            if (checked>0)
+                return {'display': 'none'};
+            else
+                return {'display': 'block'};
         },
 
         // update datepicker and slider on button clicks
@@ -130,16 +129,13 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
             }
         },
         
-        // close popup window
-        popup_open: function(n_clicks_timestamp, usgs_feature, cdec_feature, gauge_selected) {
+        // open popup window
+        popup_open: function(n_clicks_timestamp, fcst_point) {
             var timenow = Date.now();
-            if (timenow-n_clicks_timestamp<100 || 
-                ((usgs_feature==null || usgs_feature['properties']['STAID']==null) && gauge_selected=='usgs') ||
-                ((cdec_feature==null || cdec_feature['properties']['ID']==null)    && gauge_selected=='cdec')) {
-                return [{'display': 'none'}, 'Station Not Found'];
+            if (timenow-n_clicks_timestamp<100 || fcst_point==null) {
+                return [{'display': 'none'}, 'Station not selected yet'];
             } else {
-                if (gauge_selected=='usgs') { title = usgs_feature['properties']['tooltip']; }
-                if (gauge_selected=='cdec') { title = cdec_feature['properties']['tooltip']; }
+                title = fcst_point['properties']['tooltip'];
                 return [{'display': 'block'}, title];
             }
         },

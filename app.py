@@ -38,7 +38,7 @@ point_to_layer = assign('''function(feature, latlng, context){
     return L.circleMarker(latlng, circleOptions);  // sender a simple circle marker.
 }''')
 
-fcst_points = dl.GeoJSON(url='assets/fnf_points_proj_tooltip.pbf', format='geobuf', id='points',
+fcst_points = dl.GeoJSON(url='assets/fnf_points_proj_tooltip.pbf', format='geobuf', id='fcst-points',
                          options=dict(pointToLayer=point_to_layer), cluster=True, superClusterOptions=dict(radius=5),
                          hoverStyle=arrow_function(dict(weight=5, color='red', fillColor='red', dashArray='')),
                          hideout=dict(circleOptions=dict(fillOpacity=1, color='red', weight=2, radius=5), colorscale=['cyan'], colorProp='POINT_Y', min=0, max=100))
@@ -84,11 +84,12 @@ data_cbar = html.A(html.Img(src='https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/moni
 
 ## all layers
 locator = dl.LocateControl(options={'locateOptions': {'enableHighAccuracy': True}})
-map_cnrfc = dl.Map([dl.TileLayer(), locator,
-                    dl.LayersControl([dl.Overlay([data_map, data_cbar], id='data-map',        name='Data',        checked=True),
-                                      dl.Overlay(cnrfc_boundary,        id='cnrfc-boundary',  name='CNRFC',       checked=True),
-                                      dl.Overlay(fcst_watersheds,       id='fcst-watersheds', name='Watersheds',  checked=True),
-                                      dl.Overlay(fcst_points,           id='fcst-points',     name='Fcst Points', checked=True)])],
+maptile = dl.TileLayer(url='http://services.arcgisonline.com/arcgis/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}')
+map_cnrfc = dl.Map([maptile, locator,
+                    dl.LayersControl([dl.Overlay([data_map, data_cbar], id='data-map-ol',        name='Data',        checked=True),
+                                      dl.Overlay(cnrfc_boundary,        id='cnrfc-boundary-ol',  name='CNRFC',       checked=True),
+                                      dl.Overlay(fcst_watersheds,       id='fcst-watersheds-ol', name='Watersheds',  checked=True),
+                                      dl.Overlay(fcst_points,           id='fcst-points-ol',     name='Fcst Points', checked=True)])],
                    center=[38, -119], zoom=6,
                    style={'width': '100%', 'height': '100%', 'min-height': '800px', 'min-width': '800px', 'margin': '0px', 'display': 'block'})
 
@@ -138,6 +139,23 @@ title_zone = html.Div([title_var, title_date], id='title-zone')
 bottom_controls = html.Div([datepicker, button_backward_month, button_backward_day, slider_day, button_forward_day, button_forward_month, title_zone],
                            id='bottom-controls')
 
+## pop-up window
+
+tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
+
+tab_flows = dcc.Tab(label='Stremflow',      value='flows', children=[dcc.Loading(id='loading-hist-series', children=[])], style=tab_style, selected_style=tab_style)
+tab_ancil = dcc.Tab(label='Ancillary Data', value='ancil', children=[dcc.Loading(id='loading-mofo-series', children=[])], style=tab_style, selected_style=tab_style)
+tab_table = dcc.Tab(label='Table',          value='table', children=[dcc.Loading(id='loading-long-series', children=[])], style=tab_style, selected_style=tab_style)
+
+button_popup_close = html.Button(' X ', id='button-popup-close')
+title_popup = html.Div('B-120 Forecast Point', id='title-popup')
+
+popup_tabs = dcc.Tabs([tab_flows, tab_ancil, tab_table], id='popup-tabs', value='flows', style=tab_style)
+
+# popup window for time series
+popup_window = html.Div([title_popup, button_popup_close, popup_tabs], id='popup-window')
+
+
 # some external things
 external_stylesheets = ['https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css']
 external_scripts     = ['https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.0/chroma.min.js']  # js lib used for colors
@@ -150,6 +168,7 @@ app.layout = html.Div([
     map_cnrfc,
     logo_cw3e,
     layer_var_select,
+    popup_window,
     bottom_controls
 ])
 
@@ -201,8 +220,8 @@ app.clientside_callback(
         namespace='clientside',
         function_name='update_cbar_visibility'
     ),
-    Output('data-cbar', 'href'),
-    Input(component_id='data-map', component_property='checked')
+    Output('data-cbar', 'style'),
+    Input(component_id='data-map-ol', component_property='checked')
 )
 
 
@@ -222,6 +241,18 @@ app.clientside_callback(
     Input('datepicker', 'date'),
     Input('datepicker', 'min_date_allowed'),
     Input('datepicker', 'max_date_allowed')
+)
+
+# callback to popup time seris window upon feature click
+app.clientside_callback(
+    ClientsideFunction(
+        namespace='clientside',
+        function_name='popup_open'
+    ),
+    Output('popup-window', 'style'),
+    Output('title-popup', 'children'),
+    Input('button-popup-close',  'n_clicks_timestamp'),
+    Input('fcst-points', 'click_feature'),
 )
 
 
