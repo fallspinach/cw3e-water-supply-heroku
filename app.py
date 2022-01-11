@@ -13,7 +13,7 @@ import plotly.graph_objs as go
 from datetime import date, datetime, timedelta
 
 # temporary set up
-curr_day   = datetime(2022, 1, 8)
+curr_day   = datetime(2022, 1, 9)
 data_start = datetime(2021, 6, 1)
 data_end   = curr_day
 
