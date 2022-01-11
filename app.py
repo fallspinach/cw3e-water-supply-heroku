@@ -14,8 +14,8 @@ import pandas as pd
 from datetime import date, datetime, timedelta
 
 # temporary set up
-curr_day   = datetime(2022, 1, 9)
-data_start = datetime(2021, 6, 1)
+curr_day   = date.today()-timedelta(days=2)
+data_start = date(2021, 6, 1)
 data_end   = curr_day
 
 
@@ -100,10 +100,10 @@ map_cnrfc = dl.Map([maptile, locator,
 datepicker = html.Div(
     dcc.DatePickerSingle(
         id='datepicker',
-        min_date_allowed=data_start.date(),
-        max_date_allowed=data_end.date(),
-        initial_visible_month=data_start.date(),
-        date=curr_day.date()
+        min_date_allowed=data_start,
+        max_date_allowed=data_end,
+        initial_visible_month=data_start,
+        date=curr_day
     ),
     id='datepicker-container'
 )
@@ -148,7 +148,7 @@ fnf_stations = ['AMF', 'CSN', 'EFC', 'EWR', 'FTO', 'KGF', 'KRI', 'KWT', 'MKM', '
 # flow data figure
 def draw_flows(staid):
     if staid in fnf_stations:
-        fcsv = 'assets/flow_reanalysis_monthly/%s.csv' % staid
+        fcsv = 'assets/flow_monthly/%s.csv' % staid
         df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', names=['Date', 'FNF', 'Qsim', 'QsimBC'])
         fig_flows = px.line(df, labels={'Date': '', 'value': 'Flow (taf/mon)'})
     else:
