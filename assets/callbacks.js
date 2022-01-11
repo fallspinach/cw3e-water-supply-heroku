@@ -27,7 +27,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         // update overlay image url
         update_img_url: function(date_value, var_value) {
             var base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/output/';
-            var var_names = ['smtot_r', 'swe_r'];
+            var var_names = ['swe_r', 'smtot_r'];
             var d = new Date(date_value);
             var yyyy = d.getUTCFullYear().toString();
             var mm = (d.getUTCMonth()+1).toString(); if (mm<10) { mm = '0' + mm; }
@@ -39,16 +39,18 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         // update overlay color bar
         update_cbar: function(var_value) {
             var base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/output/';
-            var var_names = ['smtot_r', 'swe_r'];
+            var var_names = ['swe_r', 'smtot_r'];
             var new_url = base_url + var_names[var_value] + '_cbar.png';
             return new_url;
         },
         
         update_cbar_visibility: function(checked) {
-            if (checked>0)
+            if (checked>0) {
                 return {'display': 'none'};
-            else
+            }
+            else {
                 return {'display': 'block'};
+            }
         },
 
         // update datepicker and slider on button clicks
@@ -91,11 +93,15 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
                 date_new.setTime(date_old.getTime());
             }
             
-            if (date_new.getTime()<date_min.getTime() || date_new.getTime()>date_max.getTime()) {
-                return [date_old.getUTCDate()-1, date_old.toISOString().split('T')[0]];
-            } else {
-                return [date_new.getUTCDate()-1, date_new.toISOString().split('T')[0]];
+            if (date_new.getTime()<date_min.getTime()) {
+                date_new = date_min;
             }
+            if (date_new.getTime()>date_max.getTime()) {
+                date_new = date_max;
+            }
+            
+            return [date_new.getUTCDate()-1, date_new.toISOString().split('T')[0]];
+            
         },
         
         // toggle forcing map
@@ -130,9 +136,9 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         },
         
         // open popup window
-        popup_open: function(n_clicks_timestamp, fcst_point) {
+        popup_open: function(n_clicks_timestamp_x, fcst_point) {
             var timenow = Date.now();
-            if (timenow-n_clicks_timestamp<100 || fcst_point==null) {
+            if (timenow-n_clicks_timestamp_x<100) {
                 return [{'display': 'none'}, 'Station not selected yet'];
             } else {
                 title = fcst_point['properties']['tooltip'];

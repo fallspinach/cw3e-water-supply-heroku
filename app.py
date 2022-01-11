@@ -13,14 +13,14 @@ import plotly.graph_objs as go
 from datetime import date, datetime, timedelta
 
 # temporary set up
-curr_day   = datetime(2022, 1, 6)
+curr_day   = datetime(2022, 1, 8)
 data_start = datetime(2021, 6, 1)
-data_end   = datetime(2022, 1, 6)
+data_end   = curr_day
 
 
 ## data variable selection dropdown
-var_longnames = ['2-m SM Percentile', 'SWE Percentile']
-var_names = ['smtot_r', 'swe_r']
+var_longnames = ['SWE Percentile', '2-m SM Percentile']
+var_names = ['swe_r', 'smtot_r']
 
 options_data = [dict(label=var_longnames[i], value=i) for i in range(len(var_longnames))]
 dropdown_data = dcc.Dropdown(options=options_data, value=0, id='dropdown-data', clearable=False)
@@ -76,12 +76,11 @@ cnrfc_boundary = dl.GeoJSON(url='assets/cnrfc_bd_degree_wgs84.pbf', format='geob
 
 cnrfc_domain = [[32, -125], [44, -113]]
 base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/'
-#img_url = base_url + curr_day.strftime('monitor/output/%Y/smtot_r_%Y%m%d%') + var_names[dropdown_forcing.value] + '.png'
-img_url = base_url + curr_day.strftime('monitor/output/%Y/smtot_r_%Y%m%d.png')
-data_map = dl.ImageOverlay(id='data-img', url=img_url, bounds=cnrfc_domain, opacity=0.6)
+img_url = base_url + curr_day.strftime('monitor/output/%Y/'+ var_names[0] + '_%Y%m%d.png')
+data_map = dl.ImageOverlay(id='data-img', url=img_url, bounds=cnrfc_domain, opacity=0.7)
 
 # color bar
-data_cbar = html.A(html.Img(src='https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/output/smtot_r_cbar.png', title='Color Bar', id='data-cbar-img'), id='data-cbar')
+data_cbar = html.A(html.Img(src=base_url+'monitor/output/'+ var_names[0] + '_cbar.png', title='Color Bar', id='data-cbar-img'), id='data-cbar')
 
 
 ## all layers
