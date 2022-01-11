@@ -10,6 +10,7 @@ from dash_extensions.javascript import Namespace, arrow_function, assign
 
 import plotly.express as px
 import plotly.graph_objs as go
+import pandas as pd
 from datetime import date, datetime, timedelta
 
 # temporary set up
@@ -142,12 +143,17 @@ bottom_controls = html.Div([datepicker, button_backward_month, button_backward_d
 
 ## build time series figures
 
+fnf_stations = ['AMF', 'CSN', 'EFC', 'EWR', 'FTO', 'KGF', 'KRI', 'KWT', 'MKM', 'MRC', 'MSS', 'PSH', 'SBB', 'SCC', 'SDT', 'SIS', 'SJF', 'SNS', 'TLG', 'TNL', 'TRF', 'WFC', 'WWR', 'YRS']
+
 # flow data figure
 def draw_flows(staid):
-    if staid!=None:
-        fig_flows = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Time', 'y': 'Flow (kaf/mon)'})
+    if staid in fnf_stations:
+        fcsv = 'assets/flow_reanalysis_monthly/%s.csv' % staid
+        df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', names=['Date', 'FNF', 'Qsim', 'QsimBC'])
+        fig_flows = px.line(df, labels={'Date': '', 'value': 'Flow (taf/mon)'})
     else:
-        fig_flows = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (kaf/mon)'})
+        fig_flows = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (taf/mon)'})
+    fig_flows.update_layout(margin=dict(l=15, r=15, t=15, b=5))
     return fig_flows
     
 # ancillary data figure
@@ -163,8 +169,8 @@ fig_ancil = draw_ancil('FTO')
 
 ## pop-up window
 
-graph_flows = dcc.Graph(id='graph-flows', figure=fig_flows, style={'height': '400px'})
-graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '400px'})
+graph_flows = dcc.Graph(id='graph-flows', figure=fig_flows, style={'height': '380px'})
+graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '380px'})
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
@@ -178,7 +184,7 @@ title_popup = html.Div('B-120 Forecast Point', id='title-popup')
 popup_tabs = dcc.Tabs([tab_flows, tab_ancil, tab_table], id='popup-tabs', value='flows', style=tab_style)
 
 # popup window for time series
-popup_window = html.Div([title_popup, button_popup_close, popup_tabs], id='popup-window')
+popup_window = html.Div([title_popup, button_popup_close, popup_tabs], id='popup-window', style={'display': 'block', 'height': '450px'})
 
 
 # some external things
@@ -280,6 +286,14 @@ app.clientside_callback(
     Input('fcst-points', 'click_feature'),
 )
 
+# create/update historic time series graph in popup
+@app.callback(Output(component_id='graph-flows', component_property='figure'),
+              Input('fcst-points', 'click_feature'))
+def update_flows(fcst_point):
+
+    fig = draw_flows(fcst_point['properties']['Station_ID'])
+        
+    return fig
 
 if __name__ == '__main__':
     app.run_server(debug=True)
