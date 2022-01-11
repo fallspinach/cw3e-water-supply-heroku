@@ -174,7 +174,7 @@ graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '36
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
-tab_flows = dcc.Tab(label='Stremflow',      value='flows', children=[dcc.Loading(id='loading-flows', children=graph_flows)], style=tab_style, selected_style=tab_style)
+tab_flows = dcc.Tab(label='Streamflow',     value='flows', children=[dcc.Loading(id='loading-flows', children=graph_flows)], style=tab_style, selected_style=tab_style)
 tab_ancil = dcc.Tab(label='Ancillary Data', value='ancil', children=[dcc.Loading(id='loading-ancil', children=graph_ancil)], style=tab_style, selected_style=tab_style)
 tab_table = dcc.Tab(label='Table',          value='table', children=[dcc.Loading(id='loading-table', children=[])],        style=tab_style, selected_style=tab_style)
 
