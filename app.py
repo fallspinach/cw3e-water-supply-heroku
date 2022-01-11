@@ -169,8 +169,8 @@ fig_ancil = draw_ancil('FTO')
 
 ## pop-up window
 
-graph_flows = dcc.Graph(id='graph-flows', figure=fig_flows, style={'height': '380px'})
-graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '380px'})
+graph_flows = dcc.Graph(id='graph-flows', figure=fig_flows, style={'height': '360px'})
+graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '360px'})
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
