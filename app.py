@@ -184,7 +184,7 @@ title_popup = html.Div('B-120 Forecast Point', id='title-popup')
 popup_tabs = dcc.Tabs([tab_flows, tab_ancil, tab_table], id='popup-tabs', value='flows', style=tab_style)
 
 # popup window for time series
-popup_window = html.Div([title_popup, button_popup_close, popup_tabs], id='popup-window', style={'display': 'block', 'height': '450px'})
+popup_window = html.Div([title_popup, button_popup_close, popup_tabs], id='popup-window', style={'display': 'none', 'height': '450px'})
 
 
 # some external things
