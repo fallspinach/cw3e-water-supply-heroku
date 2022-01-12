@@ -15,13 +15,13 @@ from datetime import date, datetime, timedelta
 
 # temporary set up
 curr_day   = date.today()-timedelta(days=1)
-data_start = date(2021, 6, 1)
+data_start = date(2021, 7, 1)
 data_end   = curr_day
 
 
 ## data variable selection dropdown
-var_longnames = ['SWE Percentile', '2-m SM Percentile']
-var_names = ['swe_r', 'smtot_r']
+var_longnames = ['SWE Percentile', '2-m SM Percentile', 'Precipitation', 'Air Temperature']
+var_names = ['swe_r', 'smtot_r', 'precip', 'tair2m']
 
 options_data = [dict(label=var_longnames[i], value=i) for i in range(len(var_longnames))]
 dropdown_data = dcc.Dropdown(options=options_data, value=0, id='dropdown-data', clearable=False)
