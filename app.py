@@ -14,7 +14,7 @@ import pandas as pd
 from datetime import date, datetime, timedelta
 
 # temporary set up
-curr_day   = date.today()-timedelta(days=1)
+curr_day   = (datetime.utcnow()-timedelta(days=1, hours=10)).date()
 data_start = date(2021, 7, 1)
 data_end   = curr_day
 
