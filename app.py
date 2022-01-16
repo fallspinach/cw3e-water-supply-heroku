@@ -145,16 +145,29 @@ bottom_controls = html.Div([datepicker, button_backward_month, button_backward_d
 
 fnf_stations = ['AMF', 'CSN', 'EFC', 'EWR', 'FTO', 'KGF', 'KRI', 'KWT', 'MKM', 'MRC', 'MSS', 'PSH', 'SBB', 'SCC', 'SDT', 'SIS', 'SJF', 'SNS', 'TLG', 'TNL', 'TRF', 'WFC', 'WWR', 'YRS']
 
-# flow data figure
-def draw_flows(staid):
+# flow reanalysis figure
+def draw_reana(staid):
     if staid in fnf_stations:
-        fcsv = 'assets/flow_monthly/%s.csv' % staid
+        fcsv = 'assets/reanalysis/%s.csv' % staid
         df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', names=['Date', 'FNF', 'Qsim', 'QsimBC'])
-        fig_flows = px.line(df, labels={'Date': '', 'value': 'Flow (taf/mon)'})
+        fig_reana = px.line(df, labels={'Date': '', 'value': 'Flow (kaf/mon)'})
     else:
-        fig_flows = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (taf/mon)'})
-    fig_flows.update_layout(margin=dict(l=15, r=15, t=15, b=5))
-    return fig_flows
+        fig_reana = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (kaf/mon)'})
+    fig_reana.update_layout(margin=dict(l=15, r=15, t=15, b=5))
+    return fig_reana
+    
+# flow monitor/forecast figure
+def draw_mofor(staid):
+    if staid in fnf_stations:
+        fcsv = 'assets/forecast/%s_20220101-20220731.csv' % staid
+        df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', usecols = ['Date']+['Ens%02d' % (i+1) for i in range(42)]+['Avg', 'Exc50', 'Exc90', 'Exc10'])
+        linecolors = {'Ens%02d' % (i+1): 'lightgray' for i in range(42)}
+        linecolors.update({'Avg': 'black', 'Exc50': 'blue', 'Exc90': 'green', 'Exc10': 'red'})
+        fig_mofor = px.line(df, labels={'Date': '', 'value': 'Flow (kaf/mon)'}, color_discrete_map=linecolors)
+    else:
+        fig_mofor = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (kaf/mon)'})
+    fig_mofor.update_layout(margin=dict(l=15, r=15, t=15, b=5))
+    return fig_mofor
     
 # ancillary data figure
 def draw_ancil(staid):
@@ -164,24 +177,27 @@ def draw_ancil(staid):
         fig_ancil = px.line(x=[2018, 2023], y=[50, 50], labels={'x': 'Data not available.', 'y': 'Percentile'})
     return fig_ancil
 
-fig_flows = draw_flows('FTO')
+fig_reana = draw_reana('FTO')
+fig_mofor = draw_mofor('FTO')
 fig_ancil = draw_ancil('FTO')
 
 ## pop-up window
 
-graph_flows = dcc.Graph(id='graph-flows', figure=fig_flows, style={'height': '360px'})
+graph_reana = dcc.Graph(id='graph-reana', figure=fig_reana, style={'height': '360px'})
+graph_mofor = dcc.Graph(id='graph-mofor', figure=fig_mofor, style={'height': '360px'})
 graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '360px'})
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
-tab_flows = dcc.Tab(label='Streamflow',     value='flows', children=[dcc.Loading(id='loading-flows', children=graph_flows)], style=tab_style, selected_style=tab_style)
-tab_ancil = dcc.Tab(label='Ancillary Data', value='ancil', children=[dcc.Loading(id='loading-ancil', children=graph_ancil)], style=tab_style, selected_style=tab_style)
-tab_table = dcc.Tab(label='Table',          value='table', children=[dcc.Loading(id='loading-table', children=[])],        style=tab_style, selected_style=tab_style)
+tab_reana = dcc.Tab(label='Reanalysis',      value='reana', children=[dcc.Loading(id='loading-reana', children=graph_reana)], style=tab_style, selected_style=tab_style)
+tab_mofor = dcc.Tab(label='Monitor/Forecast',value='mofor', children=[dcc.Loading(id='loading-mofor', children=graph_mofor)], style=tab_style, selected_style=tab_style)
+tab_ancil = dcc.Tab(label='Ancillary Data',  value='ancil', children=[dcc.Loading(id='loading-ancil', children=graph_ancil)], style=tab_style, selected_style=tab_style)
+tab_table = dcc.Tab(label='Table',           value='table', children=[dcc.Loading(id='loading-table', children=[])],        style=tab_style, selected_style=tab_style)
 
 button_popup_close = html.Button(' X ', id='button-popup-close')
 title_popup = html.Div('B-120 Forecast Point', id='title-popup')
 
-popup_tabs = dcc.Tabs([tab_flows, tab_ancil, tab_table], id='popup-tabs', value='flows', style=tab_style)
+popup_tabs = dcc.Tabs([tab_reana, tab_mofor, tab_ancil, tab_table], id='popup-tabs', value='reana', style=tab_style)
 
 # popup window for time series
 popup_window = html.Div([title_popup, button_popup_close, popup_tabs], id='popup-window', style={'display': 'none', 'height': '450px'})
@@ -287,13 +303,15 @@ app.clientside_callback(
 )
 
 # create/update historic time series graph in popup
-@app.callback(Output(component_id='graph-flows', component_property='figure'),
+@app.callback(Output(component_id='graph-reana', component_property='figure'),
+              Output(component_id='graph-mofor', component_property='figure'),
               Input('fcst-points', 'click_feature'))
 def update_flows(fcst_point):
 
-    fig = draw_flows(fcst_point['properties']['Station_ID'])
-        
-    return fig
+    fig_reana = draw_reana(fcst_point['properties']['Station_ID'])
+    fig_mofor = draw_mofor(fcst_point['properties']['Station_ID'])
+            
+    return [fig_reana, fig_mofor]
 
 if __name__ == '__main__':
     app.run_server(debug=True)
