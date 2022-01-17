@@ -162,8 +162,8 @@ def draw_mofor(staid):
         fcsv = 'assets/forecast/%s_20220101-20220731.csv' % staid
         df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', usecols = ['Date']+['Ens%02d' % (i+1) for i in range(42)]+['Avg', 'Exc50', 'Exc90', 'Exc10'])
         linecolors = {'Ens%02d' % (i+1): 'lightgray' for i in range(42)}
-        linecolors.update({'Avg': 'black', 'Exc50': 'blue', 'Exc90': 'green', 'Exc10': 'red'})
-        fig_mofor = px.line(df, labels={'Date': '', 'value': 'Flow (kaf/mon)'}, color_discrete_map=linecolors)
+        linecolors.update({'Avg': 'black', 'Exc50': 'green', 'Exc90': 'red', 'Exc10': 'blue'})
+        fig_mofor = px.line(df, labels={'Date': '', 'value': 'Flow (kaf/mon)'}, color_discrete_map=linecolors, markers=True)
     else:
         fig_mofor = px.line(x=[2018, 2023], y=[0, 0], labels={'x': 'Data not available.', 'y': 'Flow (kaf/mon)'})
     fig_mofor.update_layout(margin=dict(l=15, r=15, t=15, b=5))
