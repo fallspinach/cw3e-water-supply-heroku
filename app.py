@@ -1,6 +1,7 @@
 import os
 
 import dash
+from dash import dash_table
 from dash import dcc
 from dash import html
 from dash.dependencies import ClientsideFunction, Input, Output
@@ -11,6 +12,7 @@ from dash_extensions.javascript import Namespace, arrow_function, assign
 import plotly.express as px
 import plotly.graph_objs as go
 import pandas as pd
+import numpy as np
 from datetime import date, datetime, timedelta
 
 # temporary set up
@@ -177,22 +179,50 @@ def draw_ancil(staid):
         fig_ancil = px.line(x=[2018, 2023], y=[50, 50], labels={'x': 'Data not available.', 'y': 'Percentile'})
     return fig_ancil
 
+# forecast table
+def draw_table(staid):
+    cols = ['Date', 'Exc50', 'Pav50', 'Exc90', 'Pav90', 'Exc10', 'Pav10', 'Avg']
+    if staid in fnf_stations:
+        fcsv = 'assets/forecast/%s_20220101-20220731.csv' % staid
+        df = pd.read_csv(fcsv, parse_dates=False, usecols=cols)
+        df = df[cols]
+        cols.remove('Date')
+        df[cols] = np.rint(df[cols])
+        df['Date'] = [ datetime.strptime(m, '%Y-%m-%d').strftime('%B %Y') for m in df['Date'] ]
+    else:
+        fcsv = 'assets/forecast/FTO_20220101-20220731.csv'
+        df = pd.read_csv(fcsv, parse_dates=False, usecols=cols)
+        df = df[cols]
+        df.drop(df.index, inplace=True)
+
+    df.rename(columns={'Date': 'Month', 'Exc50': '50% (KAF)', 'Pav50': '50% (%AVG)', 'Exc90': '90% (KAF)', 'Pav90': '90% (%AVG)', 'Exc10': '10% (KAF)', 'Pav10': '10% (%AVG)', 'Avg': 'AVG (KAF)'}, inplace=True)
+    table_fcst = dash_table.DataTable(id='fcst-table',
+                                      columns=[{'name': i, 'id': i} for i in df.columns],
+                                      data=df.to_dict('records'),
+                                      style_header={'backgroundColor': 'lightyellow', 'fontWeight': 'bold'},
+                                     )
+    return table_fcst
+
 fig_reana = draw_reana('FTO')
 fig_mofor = draw_mofor('FTO')
 fig_ancil = draw_ancil('FTO')
+
+table_fcst = draw_table('FTO')
+table_note = html.Div('[Note] 50%, 90%, 10%: exceedance levels within the forecast ensemble. AVG: month of year average during 1979-2020. %AVG: percentage of AVG. KAF: kilo-acre-feet.', id='table-note')
 
 ## pop-up window
 
 graph_reana = dcc.Graph(id='graph-reana', figure=fig_reana, style={'height': '360px'})
 graph_mofor = dcc.Graph(id='graph-mofor', figure=fig_mofor, style={'height': '360px'})
 graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '360px'})
+div_table = html.Div(id='div-table', children=[table_fcst, table_note], style={'padding': '20px'})
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
 tab_reana = dcc.Tab(label='Reanalysis',      value='reana', children=[dcc.Loading(id='loading-reana', children=graph_reana)], style=tab_style, selected_style=tab_style)
 tab_mofor = dcc.Tab(label='Monitor/Forecast',value='mofor', children=[dcc.Loading(id='loading-mofor', children=graph_mofor)], style=tab_style, selected_style=tab_style)
 tab_ancil = dcc.Tab(label='Ancillary Data',  value='ancil', children=[dcc.Loading(id='loading-ancil', children=graph_ancil)], style=tab_style, selected_style=tab_style)
-tab_table = dcc.Tab(label='Table',           value='table', children=[dcc.Loading(id='loading-table', children=[])],        style=tab_style, selected_style=tab_style)
+tab_table = dcc.Tab(label='Table',           value='table', children=[dcc.Loading(id='loading-table', children=div_table)],  style=tab_style, selected_style=tab_style)
 
 button_popup_close = html.Button(' X ', id='button-popup-close')
 title_popup = html.Div('B-120 Forecast Point', id='title-popup')
@@ -305,13 +335,15 @@ app.clientside_callback(
 # create/update historic time series graph in popup
 @app.callback(Output(component_id='graph-reana', component_property='figure'),
               Output(component_id='graph-mofor', component_property='figure'),
+              Output(component_id='div-table', component_property='children'),
               Input('fcst-points', 'click_feature'))
 def update_flows(fcst_point):
 
     fig_reana = draw_reana(fcst_point['properties']['Station_ID'])
     fig_mofor = draw_mofor(fcst_point['properties']['Station_ID'])
+    table_fcst = draw_table(fcst_point['properties']['Station_ID'])
             
-    return [fig_reana, fig_mofor]
+    return [fig_reana, fig_mofor, [table_fcst, table_note]]
 
 if __name__ == '__main__':
     app.run_server(debug=True)

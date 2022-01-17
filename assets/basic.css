@@ -187,4 +187,10 @@
     z-index:        1100;
 }
 
+#table-note {
+    font-size:      small;
+    font-family:    Arial, Helvetica, sans-serif;
+    padding:        5px;
+}
+
 
