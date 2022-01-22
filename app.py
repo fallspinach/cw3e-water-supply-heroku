@@ -195,12 +195,21 @@ def draw_table(staid):
         df = df[cols]
         df.drop(df.index, inplace=True)
 
-    df.rename(columns={'Date': 'Month', 'Exc50': '50% (KAF)', 'Pav50': '50% (%AVG)', 'Exc90': '90% (KAF)', 'Pav90': '90% (%AVG)', 'Exc10': '10% (KAF)', 'Pav10': '10% (%AVG)', 'Avg': 'AVG (KAF)'}, inplace=True)
+    #df.rename(columns={'Date': 'Month', 'Exc50': '50% (KAF)', 'Pav50': '50% (%AVG)', 'Exc90': '90% (KAF)', 'Pav90': '90% (%AVG)', 'Exc10': '10% (KAF)', 'Pav10': '10% (%AVG)', 'Avg': 'AVG (KAF)'}, inplace=True)
     table_fcst = dash_table.DataTable(id='fcst-table',
-                                      columns=[{'name': i, 'id': i} for i in df.columns],
-                                      data=df.to_dict('records'),
-                                      style_header={'backgroundColor': 'lightyellow', 'fontWeight': 'bold'},
-                                     )
+                     #columns=[{'name': i, 'id': i} for i in df.columns],
+                     columns=[{'name': ['', 'Month'], 'id': 'Date'},
+                              {'name': ['50%', 'KAF'], 'id': 'Exc50'}, {'name': ['50%', '%AVG'], 'id': 'Pav50'},
+                              {'name': ['90%', 'KAF'], 'id': 'Exc90'}, {'name': ['90%', '%AVG'], 'id': 'Pav90'},
+                              {'name': ['10%', 'KAF'], 'id': 'Exc10'}, {'name': ['10%', '%AVG'], 'id': 'Pav10'},
+                              {'name': ['AVG', 'KAF'], 'id': 'Avg'}
+                              ],
+                     data=df.to_dict('records'),
+                     style_header={'backgroundColor': 'lightyellow', 'fontWeight': 'bold', 'textAlign': 'center'},
+                     export_format='xlsx',
+                     export_headers='display',
+                     merge_duplicate_headers=True
+                     )
     return table_fcst
 
 fig_reana = draw_reana('FTO')
@@ -215,7 +224,7 @@ table_note = html.Div('[Note] 50%, 90%, 10%: exceedance levels within the foreca
 graph_reana = dcc.Graph(id='graph-reana', figure=fig_reana, style={'height': '360px'})
 graph_mofor = dcc.Graph(id='graph-mofor', figure=fig_mofor, style={'height': '360px'})
 graph_ancil = dcc.Graph(id='graph-ancil', figure=fig_ancil, style={'height': '360px'})
-div_table = html.Div(id='div-table', children=[table_fcst, table_note], style={'padding': '20px'})
+div_table = html.Div(id='div-table', children=[table_fcst, table_note], style={'padding': '10px 50px 20px 50px'})
 
 tab_style = {'height': '28px', 'padding': '1px', 'margin': '0px'}
 
