@@ -180,7 +180,7 @@ def draw_ancil(staid):
     return fig_ancil
 
 # forecast table
-def draw_table(staid):
+def draw_table(staid, staname):
     cols = ['Date', 'Exc50', 'Pav50', 'Exc90', 'Pav90', 'Exc10', 'Pav10', 'Avg']
     if staid in fnf_stations:
         fcsv = 'assets/forecast/%s_20220101-20220731.csv' % staid
@@ -198,17 +198,18 @@ def draw_table(staid):
     #df.rename(columns={'Date': 'Month', 'Exc50': '50% (KAF)', 'Pav50': '50% (%AVG)', 'Exc90': '90% (KAF)', 'Pav90': '90% (%AVG)', 'Exc10': '10% (KAF)', 'Pav10': '10% (%AVG)', 'Avg': 'AVG (KAF)'}, inplace=True)
     table_fcst = dash_table.DataTable(id='fcst-table',
                      #columns=[{'name': i, 'id': i} for i in df.columns],
-                     columns=[{'name': ['', 'Month'], 'id': 'Date'},
+                     columns=[{'name': [staname, 'Month'], 'id': 'Date'},
                               {'name': ['50%', 'KAF'], 'id': 'Exc50'}, {'name': ['50%', '%AVG'], 'id': 'Pav50'},
                               {'name': ['90%', 'KAF'], 'id': 'Exc90'}, {'name': ['90%', '%AVG'], 'id': 'Pav90'},
                               {'name': ['10%', 'KAF'], 'id': 'Exc10'}, {'name': ['10%', '%AVG'], 'id': 'Pav10'},
                               {'name': ['AVG', 'KAF'], 'id': 'Avg'}
                               ],
                      data=df.to_dict('records'),
+                     style_data={'whiteSpace': 'normal', 'width': '300px'},
                      style_header={'backgroundColor': 'lightyellow', 'fontWeight': 'bold', 'textAlign': 'center'},
                      export_format='xlsx',
                      export_headers='display',
-                     merge_duplicate_headers=True
+                     merge_duplicate_headers=True,
                      )
     return table_fcst
 
@@ -216,7 +217,7 @@ fig_reana = draw_reana('FTO')
 fig_mofor = draw_mofor('FTO')
 fig_ancil = draw_ancil('FTO')
 
-table_fcst = draw_table('FTO')
+table_fcst = draw_table('FTO', 'Feather River at Oroville')
 table_note = html.Div('[Note] 50%, 90%, 10%: exceedance levels within the forecast ensemble. AVG: month of year average during 1979-2020. %AVG: percentage of AVG. KAF: kilo-acre-feet.', id='table-note')
 
 ## pop-up window
@@ -350,7 +351,7 @@ def update_flows(fcst_point):
 
     fig_reana = draw_reana(fcst_point['properties']['Station_ID'])
     fig_mofor = draw_mofor(fcst_point['properties']['Station_ID'])
-    table_fcst = draw_table(fcst_point['properties']['Station_ID'])
+    table_fcst = draw_table(fcst_point['properties']['Station_ID'], fcst_point['properties']['Location'])
             
     return [fig_reana, fig_mofor, [table_fcst, table_note]]
 
