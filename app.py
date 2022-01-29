@@ -163,6 +163,7 @@ def draw_mofor(staid):
     if staid in fnf_stations:
         fcsv = 'assets/forecast/%s_20220101-20220731.csv' % staid
         df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', usecols = ['Date']+['Ens%02d' % (i+1) for i in range(42)]+['Avg', 'Exc50', 'Exc90', 'Exc10'])
+        df.drop(index=df.index[-1], axis=0, inplace=True)
         linecolors = {'Ens%02d' % (i+1): 'lightgray' for i in range(42)}
         linecolors.update({'Avg': 'black', 'Exc50': 'green', 'Exc90': 'red', 'Exc10': 'blue'})
         fig_mofor = px.line(df, labels={'Date': '', 'value': 'Flow (kaf/mon)'}, color_discrete_map=linecolors, markers=True)
@@ -189,6 +190,7 @@ def draw_table(staid, staname):
         cols.remove('Date')
         df[cols] = np.rint(df[cols])
         df['Date'] = [ datetime.strptime(m, '%Y-%m-%d').strftime('%B %Y') for m in df['Date'] ]
+        df.iloc[-1, 0] = df.iloc[-1, 0].replace('July', 'April to July total')
     else:
         fcsv = 'assets/forecast/FTO_20220101-20220731.csv'
         df = pd.read_csv(fcsv, parse_dates=False, usecols=cols)
