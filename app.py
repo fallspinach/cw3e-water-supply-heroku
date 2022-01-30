@@ -14,6 +14,26 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets, external_sc
 
 server = app.server
 
+app.index_string = '''
+<!DOCTYPE html>
+<html>
+    <head>
+        {%metas%}
+        <title>Water Supply Forecast (experimental & internal use only)</title>
+        {%favicon%}
+        {%css%}
+    </head>
+    <body>
+        {%app_entry%}
+        <footer>
+            {%config%}
+            {%scripts%}
+            {%renderer%}
+        </footer>
+    </body>
+</html>
+'''
+
 app.layout = html.Div([
     map_cnrfc,
     logo_cw3e,
