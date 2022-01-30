@@ -122,7 +122,7 @@ def draw_table_all():
                               ],
                      data=df_all.to_dict('records'),
                      style_data={'whiteSpace': 'normal', 'maxWidth': '400px'},
-                     style_cell={'whiteSpace': 'normal', 'minWidth': '150px'},
+                     style_cell={'whiteSpace': 'normal', 'minWidth': '100px'},
                      style_header={'backgroundColor': 'lightyellow', 'fontWeight': 'bold', 'textAlign': 'center'},
                      style_table={'padding-bottom': '0px'},
                      export_format='xlsx',
