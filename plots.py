@@ -6,7 +6,11 @@ import plotly.graph_objs as go
 import pandas as pd
 import numpy as np
 from datetime import date, datetime, timedelta
+from dateutil.relativedelta import relativedelta
 
+curr_day = datetime.utcnow().date()
+fcst_t1  = curr_day - timedelta(days=curr_day.day-1)
+fcst_t2  = fcst_t1 + relativedelta(months=6)-timedelta(days=1)
 
 all_stations = {'AMF': 'American River below Folsom Lake', 'ASP': 'Arroyo Seco near Pasadena', 'ASS': 'Arroyo Seco near Soledad', 'CSN': 'Cosumnes River at Michigan Bar', 'EFC': 'East Carson near Gardnerville', 'EWR': 'East Walker near Bridgeport', 'ERS': 'Eel River at Scotia', 'FTO': 'Feather River at Oroville', 'KWT': 'Kaweah River below Terminus reservoir', 'KRB': 'Kern River below City of Bakersfield', 'KRI': 'Kern River below Lake Isabella', 'KGF': 'Kings River below Pine Flat reservoir', 'KLO': 'Klamath River Copco to Orleans', 'MSS': 'McCloud River above Shasta Lake', 'MRC': 'Merced River below Merced Falls', 'MKM': 'Mokelumne River inflow to Pardee', 'NCD': 'Nacimiento below Nacimiento Dam', 'NPH': 'Napa River near St Helena', 'OWL': 'Owens River below Long Valley Dam', 'PSH': 'Pit River near Montgomerey and Squaw Creek', 'RRH': 'Russian River at Healdsburg', 'SBB': 'Sacramento R above Bend Bridge', 'SDT': 'Sacramento River at Delta', 'SRS': 'Salmon River at Somes Bar', 'SJF': 'San Joaquin River below Millerton Lake', 'ANM': 'Santa Ana River near Mentone', 'SSP': 'Sespe Creek near Fillmore', 'SIS': 'Shasta Lake Total Inflow', 'SNS': 'Stanislaus River below Goodwin', 'TNL': 'Trinity River near Lewiston Lake', 'TRF': 'Truckee River from Tahoe to Farad', 'SCC': 'Tule River below Lake Success', 'TLG': 'Tuolumne River below Lagrange reservoir', 'WFC': 'West Fork Carson at Woodfords', 'WWR': 'West Walker near Coleville', 'YRS': 'Yuba River near Smartsville'}
 
@@ -30,7 +34,7 @@ def draw_reana(staid):
 # flow monitor/forecast figure
 def draw_mofor(staid):
     if staid in fnf_stations:
-        fcsv = 'data/forecast/%s_20220101-20220731.csv' % staid
+        fcsv = 'data/forecast/%s_%s-%s.csv' % (staid, fcst_t1.strftime('%Y%m%d'), fcst_t2.strftime('%Y%m%d'))
         df = pd.read_csv(fcsv, parse_dates=True, index_col='Date', usecols = ['Date']+['Ens%02d' % (i+1) for i in range(42)]+['Avg', 'Exc50', 'Exc90', 'Exc10'])
         df.drop(index=df.index[-1], axis=0, inplace=True)
         linecolors = {'Ens%02d' % (i+1): 'lightgray' for i in range(42)}
@@ -55,7 +59,7 @@ table_note = html.Div('  [Note] 50%, 90%, 10%: exceedance levels within the fore
 def draw_table(staid, staname):
     cols = ['Date', 'Exc50', 'Pav50', 'Exc90', 'Pav90', 'Exc10', 'Pav10', 'Avg']
     if staid in fnf_stations:
-        fcsv = 'data/forecast/%s_20220101-20220731.csv' % staid
+        fcsv = 'data/forecast/%s_%s-%s.csv' % (staid, fcst_t1.strftime('%Y%m%d'), fcst_t2.strftime('%Y%m%d'))
         df = pd.read_csv(fcsv, parse_dates=False, usecols=cols)
         df = df[cols]
         cols.remove('Date')
@@ -63,7 +67,7 @@ def draw_table(staid, staname):
         df['Date'] = [ datetime.strptime(m, '%Y-%m-%d').strftime('%B %Y') for m in df['Date'] ]
         df.iloc[-1, 0] = df.iloc[-1, 0].replace('July', 'April-July total')
     else:
-        fcsv = 'data/forecast/FTO_20220101-20220731.csv'
+        fcsv = 'data/forecast/FTO_%s-%s.csv' % (fcst_t1.strftime('%Y%m%d'), fcst_t2.strftime('%Y%m%d'))
         df = pd.read_csv(fcsv, parse_dates=False, usecols=cols)
         df = df[cols]
         df.drop(df.index, inplace=True)
@@ -93,7 +97,7 @@ def draw_table_all():
     cnt = 0
     for staid,staname in fnf_id_names.items():
         cols = ['Date', 'Exc50', 'Pav50', 'Exc90', 'Pav90', 'Exc10', 'Pav10', 'Avg']
-        fcsv = 'data/forecast/%s_20220101-20220731.csv' % staid
+        fcsv = 'data/forecast/%s_%s-%s.csv' % (staid, fcst_t1.strftime('%Y%m%d'), fcst_t2.strftime('%Y%m%d'))
         df = pd.read_csv(fcsv, parse_dates=False, usecols=cols)
         df = df[cols]
         cols.remove('Date')

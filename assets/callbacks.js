@@ -6,7 +6,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     
         // update title variable name
         update_title_var: function(i_var) {
-            var var_longnames = ['2-m SM Percentile', 'SWE Percentile', 'Precipitation', 'Air Temperature'];
+            var var_longnames = ['2-m SM Percentile', 'SWE Percentile', 'Precipitation', 'Air Temperature', 'Monthly P Pctl', 'Monthly T Pctl'];
             return var_longnames[i_var];
         },
         
@@ -27,12 +27,15 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         // update overlay image url
         update_img_url: function(date_value, var_value) {
             var base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/';
-            var var_names = ['swe_r', 'smtot_r', 'precip', 'tair2m'];
-            var var_types = ['output', 'output', 'forcing', 'forcing'];
+            var var_names = ['swe_r', 'smtot_r', 'precip', 'tair2m', 'precip_r', 'tair2m_r'];
+            var var_types = ['output', 'output', 'forcing', 'forcing', 'forcing', 'forcing'];
             var d = new Date(date_value);
             var yyyy = d.getUTCFullYear().toString();
             var mm = (d.getUTCMonth()+1).toString(); if (mm<10) { mm = '0' + mm; }
             var dd = d.getUTCDate().toString(); if (dd<10) { dd = '0' + dd; }
+            if (var_names[var_value]=='precip_r' || var_names[var_value]=='tair2m_r') {
+                dd = ''
+            }
             var new_url = base_url + var_types[var_value] + '/' + yyyy + '/' + var_names[var_value] + '_' + yyyy + mm + dd + '.png';
             return new_url;
         },
@@ -40,8 +43,8 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
         // update overlay color bar
         update_cbar: function(var_value) {
             var base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/monitor/';
-            var var_names = ['swe_r', 'smtot_r', 'precip', 'tair2m'];
-            var var_types = ['output', 'output', 'forcing', 'forcing'];
+            var var_names = ['swe_r', 'smtot_r', 'precip', 'tair2m', 'precip_r', 'tair2m_r'];
+            var var_types = ['output', 'output', 'forcing', 'forcing', 'forcing', 'forcing'];
             var new_url = base_url + var_types[var_value] + '/' + var_names[var_value] + '_cbar.png';
             return new_url;
         },
