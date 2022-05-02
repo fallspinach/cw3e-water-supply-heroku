@@ -13,6 +13,7 @@ from plots import *
 
 # temporary set up
 curr_day   = (datetime.utcnow()-timedelta(days=1, hours=10)).date()
+curr_day   = (datetime.utcnow()-timedelta(days=1, hours=0)).date()
 data_start = date(2021, 7, 1)
 data_end   = curr_day
 
@@ -22,7 +23,7 @@ var_longnames = ['SWE Percentile', '2-m SM Percentile', 'Precipitation', 'Air Te
 var_names = ['swe_r', 'smtot_r', 'precip', 'tair2m', 'precip_r', 'tair2m_r']
 
 options_data = [dict(label=var_longnames[i], value=i) for i in range(len(var_longnames))]
-dropdown_data = dcc.Dropdown(options=options_data, value=0, id='dropdown-data', clearable=False)
+dropdown_data = dcc.Dropdown(options=options_data, value=1, id='dropdown-data', clearable=False)
 
 layer_var_select = html.Div([dropdown_data], id='layer-var-select-container')
 
@@ -75,11 +76,11 @@ cnrfc_boundary = dl.GeoJSON(url='assets/cnrfc_bd_degree_wgs84.pbf', format='geob
 
 cnrfc_domain = [[32, -125], [44, -113]]
 base_url = 'https://cw3e.ucsd.edu/wrf_hydro/cnrfc/imgs/'
-img_url = base_url + curr_day.strftime('monitor/output/%Y/'+ var_names[0] + '_%Y%m%d.png')
+img_url = base_url + curr_day.strftime('monitor/output/%Y/'+ var_names[1] + '_%Y%m%d.png')
 data_map = dl.ImageOverlay(id='data-img', url=img_url, bounds=cnrfc_domain, opacity=0.7)
 
 # color bar
-data_cbar = html.A(html.Img(src=base_url+'monitor/output/'+ var_names[0] + '_cbar.png', title='Color Bar', id='data-cbar-img'), id='data-cbar')
+data_cbar = html.A(html.Img(src=base_url+'monitor/output/'+ var_names[1] + '_cbar.png', title='Color Bar', id='data-cbar-img'), id='data-cbar')
 
 
 ## all layers
