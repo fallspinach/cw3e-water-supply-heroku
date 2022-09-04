@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 
 curr_day = datetime.utcnow().date()
 fcst_t1  = curr_day - timedelta(days=curr_day.day-1) - relativedelta(months=2)
+fcst_t1  = date(2022, 7, 1)
 fcst_t2  = fcst_t1 + relativedelta(months=6)-timedelta(days=1)
 #fcst_type = 'fusion'
 fcst_type = 'esp'
