@@ -6,7 +6,7 @@ window.dash_clientside = Object.assign({}, window.dash_clientside, {
     
         // update title variable name
         update_title_var: function(i_var) {
-            var var_longnames = ['2-m SM Percentile', 'SWE Percentile', 'Precipitation', 'Air Temperature', 'Monthly P Pctl', 'Monthly T Pctl'];
+            var var_longnames = ['SWE Percentile', '2-m SM Percentile', 'Precipitation', 'Air Temperature', 'Monthly P Pctl', 'Monthly T Pctl'];
             return var_longnames[i_var];
         },
         

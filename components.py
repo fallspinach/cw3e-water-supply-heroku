@@ -13,7 +13,7 @@ from plots import *
 
 # temporary set up
 curr_day   = (datetime.utcnow()-timedelta(days=1, hours=10)).date()
-curr_day   = (datetime.utcnow()-timedelta(days=1, hours=0)).date()
+#curr_day   = (datetime.utcnow()-timedelta(days=1, hours=0)).date()
 data_start = date(2021, 7, 1)
 data_end   = curr_day
 
@@ -131,7 +131,7 @@ button_forward_day    = html.Button('>',  id='button-forward-day',    n_clicks=0
 button_forward_month  = html.Button('>>', id='button-forward-month',  n_clicks=0)
 
 ## figure title
-title_var  = html.Div(var_longnames[0], id='title-var')
+title_var  = html.Div(var_longnames[1], id='title-var')
 title_date = html.Div(curr_day.strftime(' @ %Y-%m-%d '), id='title-date')
 
 title_zone = html.Div([title_var, title_date], id='title-zone')
